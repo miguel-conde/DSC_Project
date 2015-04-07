@@ -22,39 +22,35 @@ shinyUI(navbarPage(
                                 h4("Simple Back Off"),
                                 hr(),
                                 radioButtons("SBO_Model", "Choose model:",
-                                             c("Blogs" = "blogs",
-                                               "News" = "news",
+                                             c("Blogs"   = "blogs",
+                                               "News"    = "news",
                                                "Twitter" = "twitter",
-                                               "Global" = "global"),
+                                               "Global"  = "global"),
                                              selected = 'global'),
                                 hr(),
-                                checkboxInput("finalSample", "Final Sample?", FALSE)
+                                strong("Options:"),
+                                checkboxInput("finalSample", "Final Sample?", FALSE),
+                                checkboxInput("fullResults", "Full results?", FALSE),
+                                numericInput(inputId = 'numPred', label = "Max. Predictions", 
+                                             value = 5, min = 1, max = 100, step = 1)
                ),
                conditionalPanel(condition = "input.SBO == 'Backoff + Interpolation'",
-                                h4("Backoff + Interpolation")
-                                )
+                                h4("Backoff + Interpolation"), 
+                                hr()
+               )
              ), # wellPanel
              
              mainPanel(
-               
+               id = 'mainPredict',
                tabsetPanel(
-                 id = "SBO",
-                 tabPanel("Simple Back Off", 
+                 id = 'SBO',
+                 tabPanel('Simple Back Off', 
+                          
                           helpText("This is a teaching tool for Introductory Statistics. It displays a t-Distribtuion and a normal curve with user defined degrees of freedom and numbr of observations.
                                    The purpose is to help visualize difference between the two distributions. 
                                    See the instructions on the side panel."),
                           wellPanel(
-                          fluidRow(
-                            column(8,
-                                   textInput('userText', 'Enter your text:'), 
-                                   actionButton('validateInput', 
-                                                label = 'Validate')
-                            ),
-                            column(4, offset = 0,
-                                   strong('Prediction:'),
-                                   verbatimTextOutput('wordPredicted')
-                            )
-                          )
+                            textInput(inputId = "userText", label = 'Enter your text:')
                           ),
                           h3('Prediction:'),
                           verbatimTextOutput('wordPredicted'),
@@ -65,28 +61,8 @@ shinyUI(navbarPage(
                           helpText("This is a teaching tool for Introductory Statistics. It displays a t-Distribtuion and a normal curve with user defined degrees of freedom and numbr of observations.
                                    The purpose is to help visualize difference between the two distributions. 
                                    See the instructions on the side panel."),
-                          hr(),
-                          h2("ESTADÍSTICA DE LA MUESTRA"),
-                          hr(),
-                          dataTableOutput('table_est1'),
-                          hr(),
-                          h2("HISTOGRAMA DE VOLUMEN"),
-                          plotOutput('volHistogram', 
-                                     width = "800px", height = "450px"), 
-                          hr(),
-                          h2("DISTRIBUCIÓN POR TIPOS DE VELA"),
-                          dataTableOutput('table_distr_candles'),
-                          hr(),
-                          h2("DISTRIBUCIÓN DE VALORES POR TIPO DE VELA"),
-                          plotOutput('tipoVelaHistogram'),
-                          hr(),
-                          h2("HISTOGRAMA POR TAMAÑO DEL CUERPO DE VELA"),
-                          plotOutput("s_bHistogram", 
-                                     width = "800px", height = "900px"),
-                          hr(),
-                          h2("RESULTADOS"),
-                          h3("Patrón A"),
-                          verbatimTextOutput('res_P_A')
+                          hr()
+                          
                  ),
                  tabPanel('Chart',
                           helpText("This is a teaching tool for Introductory Statistics. It displays a t-Distribtuion and a normal curve with user defined degrees of freedom and numbr of observations.
