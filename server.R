@@ -13,24 +13,32 @@ shinyServer(function(input, output, session) {
   
   ## Reactives
   changeModel <- reactive({
-
+    
     sel <- input$SBO_Model
-
+    
     if (sel != oldSelModel) {
       withProgress(message = sprintf("Loading model '%s'", sel),
                    detail = "Can take a few seconds...", {
-        if (sel == 'blogs' )
-          model <<- loadModelBlogs()
-        else
-          if (sel == 'news' )
-            model <<- loadModelNews()
-        else
-          if (sel == 'twitter' )
-            model <<- loadModelTwitter()
-        else
-          if (sel == 'global' )
-            model <<- loadModelTotal()
-      })
+                     if (sel == 'blogs' ) {
+                       model <<- loadModelBlogs()
+                       l <<- l_Blogs
+                     }
+                     else
+                       if (sel == 'news' ) {
+                         model <<- loadModelNews()
+                         l <<- l_News
+                       }
+                     else
+                       if (sel == 'twitter' ) {
+                         model <<- loadModelTwitter()
+                         l <<- l_Twitter
+                       }
+                     else
+                       if (sel == 'global' ) {
+                         model <<- loadModelTotal()
+                         l <<- l_Total
+                       }
+                   })
       
       oldSelModel <<- sel
     }
@@ -49,27 +57,72 @@ shinyServer(function(input, output, session) {
     
     withProgress(message = sprintf("Predicting"),
                  detail = "Wait...", {
-      predictNG_v2(model, tokens, 
-                   finalSample = input$finalSample, 
-                   fullRes = input$fullResults, 
-                   NPredictions = input$numPred)
+                   res <- predictNG_v2(model, tokens, 
+                                       finalSample = input$finalSample, 
+                                       fullRes = TRUE, 
+                                       NPredictions = input$numPred,
+                                       interpol = input$interpolation)
                  })
+    
+    #    if(!input$fullResults)
+    #      Best <- as.list(c(Choose = '',res[[2]]))
+    #    else {
+    choiceList <- arrangeSelList(res)
+    if(length(choiceList$Max.Prob) == 1)
+      Best <- list(Choose = '', 
+                   choiceList$Max.Prob, 
+                   Other.Possibilities = choiceList$Others )
+    else
+      Best <- list(Choose = '', 
+                   Max.Prob = choiceList$Max.Prob, 
+                   Other.Possibilities = choiceList$Others )
+    #    }
+    updateSelectInput(session, 'selWord',  
+                      choices = Best,
+                      selected = NULL)
+    res
   })
   
   output$otherPredictions <- renderPrint({
+    pred <- predict()[[2]]
     if(!input$fullResults)
-      writeLines(arrangePred(predict()[[2]]))
+      writeLines(arrangePred(pred))
     else
       predict()[[2]]
   })
   
   output$wordPredicted <- renderPrint({
-    if(!input$fullResults)
-      writeLines(predict()[[1]])
+    pred <- predict()[[1]]
+    if(!input$fullResults) {
+      colPredict <- grep("WG[1234]", names(pred))
+      colPredict <- colPredict[length(colPredict)]
+      writeLines(as.character(as.matrix(pred[colPredict])))
+      #writeLines(pred)
+    }
     else
-      predict()[[1]]
+      pred
   })
   
+#  output$hidden <- renderPrint({
+    
+#    if (oldSelWord != input$selWord) {
+#      res <- paste(input$userText, input$selWord)
+#      oldSelWord <<- input$selWord
+#      updateTextInput(session, 'userText', value = res)
+#      res
+#    }
+    
+#  })
   
+  
+  observe({
+    x <- input$selWord
+    if (oldSelWord != input$selWord) {
+      res <- paste(input$userText, input$selWord)
+      oldSelWord <<- input$selWord
+      updateTextInput(session, 'userText', value = res)
+    }
+    
+  })
   
 })

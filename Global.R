@@ -14,6 +14,8 @@ source(file.path(dirR, "predict.R"))
 source(file.path(dirR, "makeTFLs.R"))
 source(file.path(dirR, "managePunct.R"))
 source(file.path(dirR, "splitIntoTokens.R"))
+source(file.path(dirR, "arrangeSelList.R"))
+
 
 library(RWeka)
 library(tm)
@@ -21,7 +23,15 @@ library(data.table)
 
 oldSelModel <<- ""
 
+l_Blogs   <<- c(0.01561975, 0.03848051, 0.04571407, 0.90018566)
+l_News    <<- c(0.02095653, 0.05361416, 0.06220533, 0.86322398)
+l_Twitter <<- c(0.05549261, 0.10944140, 0.15447238, 0.68059362)
+l_Total   <<- c(0.01906878, 0.05788172, 0.06563039, 0.85741911)
+l <<- NULL
+
 #model <<- loadModelTotal()
+
+oldSelWord <<- ""
 
 #' 
 #' @name arrangePred(words)
