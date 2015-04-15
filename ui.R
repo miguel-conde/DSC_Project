@@ -6,128 +6,111 @@
 #
 
 library(shiny)
+source("Global.R")
 
 shinyUI(navbarPage(
   
-#      tags$head(
-#        tags$link(rel = 'stylesheet', 
-#                  type = 'text/css', href = 'styles.css')
-#        ),
+  #      tags$head(
+  #        tags$link(rel = 'stylesheet', 
+  #                  type = 'text/css', href = 'styles.css')
+  #        ),
   
   # Application title
   titlePanel(h2("Predicting Words", style = "font-family: 'Lobster', cursive;
         font-weight: 500; line-height: 1.1; 
         color: #4d3a7d;")),
   
-#  titlePanel("",
-#             tags$head(
-#               tags$img(src="http://unbounce.com/photos/mvt-word-cloud.png", 
-#                        height="100px"))           
-#  ),
+  #  titlePanel("",
+  #             tags$head(
+  #               tags$img(src="http://unbounce.com/photos/mvt-word-cloud.png", 
+  #                        height="100px"))           
+  #  ),
   #  title = 'Ya veremos' 
-
+  
   tabPanel("Predicting",
            sidebarLayout(
              wellPanel(
                tags$style(type="text/css", 
                           '#leftPanel { width:200px; float:left;}'),
                id = "leftPanel",
-               conditionalPanel(condition = "input.SBO == 'Simple Back Off'",
-                                h4("Simple Back Off"),
-                                hr(),
-                                checkboxInput('settings', "Access to settings", FALSE),
-                                conditionalPanel(condition = "input.settings",
-                                  radioButtons("SBO_Model", "Choose model:",
-                                               c("Blogs"   = "blogs",
-                                                 "News"    = "news",
-                                                 "Twitter" = "twitter",
-                                                 "Global"  = "global"),
-                                               selected = 'twitter'),
-                                  hr(),
-                                  strong("Options:"),
-                                  checkboxInput("interpolation", "Use interpolation?", TRUE),
-                                  checkboxInput("finalSample", "Final Sample?", FALSE),
-                                  checkboxInput("fullResults", "Detailed Results?", FALSE),
-                                  numericInput(inputId = 'numPred', label = "Max. Predictions", 
-                                               value = 10, min = 1, max = 100, step = 1)
-                                )
-               ),
-               conditionalPanel(condition = "input.SBO == 'Backoff + Interpolation'",
-                                h4("Backoff + Interpolation"), 
-                                hr()
+               h4("Change settings"),
+               hr(),
+               checkboxInput('settings', "Access to settings", FALSE),
+               hr(),
+               conditionalPanel(
+                 condition = "input.settings",
+                 radioButtons("SBO_Model", "Choose model:",
+                              c("Blogs"   = "blogs",
+                                "News"    = "news",
+                                "Twitter" = "twitter",
+                                "Global"  = "global"),
+                              selected = 'twitter'),
+                 hr(),
+                 strong("Options:"),
+                 checkboxInput("interpolation", "Use interpolation?", TRUE),
+                 checkboxInput("finalSample", "Final Sample?", FALSE),
+                 checkboxInput("fullResults", "Detailed Results?", FALSE),
+                 numericInput(inputId = 'numPred', label = "Max. Predictions:", 
+                              value = 10, min = 1, max = 100, step = 1)
                )
              ), # wellPanel
              
              mainPanel(
                id = 'mainPredict',
-               tabsetPanel(
-                 id = 'SBO',
-                 tabPanel('Simple Back Off', 
-                          helpText("This is a teaching tool for Introductory Statistics. It displays a t-Distribtuion and a normal curve with user defined degrees of freedom and numbr of observations.
-                                   The purpose is to help visualize difference between the two distributions. 
-                                   See the instructions on the side panel."),
-                          wellPanel(
-                            textInput(inputId = "userText", label = 'Enter your text:')
-                          ),
-                          h3('Prediction:'),
-                          verbatimTextOutput('wordPredicted'),
-                          selectInput('selWord', 'Select next word', "", 
-                                      multiple=FALSE, selectize=FALSE),
-                          conditionalPanel(condition = 'input.fullResults',
-                            h3('Detailed Results:'),
-                            verbatimTextOutput('otherPredictions')
-                          ),
-                          conditionalPanel(condition = "4 == 2",
-                                           verbatimTextOutput('hidden')
-                          )
-                          
+               helpText(hlp_txt_1),
+               hr(),
+               wellPanel(
+                 textInput(inputId = "userText", label = 'Enter your text:')
+                 #tags$style(type='text/css', "#userText {  resize:vertical; max-height:300px; min-height:200px; }")
+               ),
+               hr(),
+               fluidRow(
+                 column(5, align = "top",
+                        h4('Main Prediction:')
                  ),
-                 tabPanel('Backoff + Interpolation',
-                          helpText("This is a teaching tool for Introductory Statistics. It displays a t-Distribtuion and a normal curve with user defined degrees of freedom and numbr of observations.
-                                   The purpose is to help visualize difference between the two distributions. 
-                                   See the instructions on the side panel."),
-                          hr()
-                          
-                 ),
-                 tabPanel('Chart',
-                          helpText("This is a teaching tool for Introductory Statistics. It displays a t-Distribtuion and a normal curve with user defined degrees of freedom and numbr of observations.
-                                   The purpose is to help visualize difference between the two distributions. 
-                                   See the instructions on the side panel.")
-                 ),
-                 tabPanel('Pest14')
-               ) # tabsetPanel
-             ) # mainPanel - este o el de arriba ¿no? Sobra uno...
-           ) # sidebarLayout - ¿TODO está dentro del sideBarPanel??????
-  ), # tabPanel Data
-  tabPanel("Help",
-           wellPanel(
-             tags$style(type="text/css", 
-                        '#leftPanel { width:200px; float:left;}'),
-             id = "leftPanel",
-             conditionalPanel(condition = "!is.null(dim(symbol))",
-                              sliderInput("range", "Range:",
-                                          min = 1, max = 10000, 
-                                          step = 10, value = c(1,10000),
-                              ),
-                              checkboxGroupInput('chart_patterns', 'Patterns:',
-                                                 c("Dragonfly", "Engulfing Bullish",
-                                                   "Engulfing Bearish")
-                              )
+                 column(8, align = "bottom",
+                        verbatimTextOutput('wordPredicted')
+                 )
+               ),
+               hr(),
+               selectInput('selWord', 'Select next word', "", 
+                           multiple=FALSE, selectize=FALSE),
+               conditionalPanel(condition = 'input.fullResults',
+                                h3('Detailed Results:'),
+                                verbatimTextOutput('otherPredictions')
+               )
+             ) # mainPanel
+           ) # sidebarLayout
+  ), # tabPanel 'Predicting'
+  navbarMenu("Help",
+             tabPanel("User Help",
+                      includeMarkdown("Help.md")
+             ), 
+             tabPanel("Inside the Box",
+                      includeMarkdown("Inside.md")
+             )),
+  tabPanel("About",
+           fluidRow(
+             column(6,
+                    includeMarkdown("About.md")
+             ),
+             column(3,
+                    img(class="img-polaroid",
+                        src=paste0("http://upload.wikimedia.org/",
+                                   "wikipedia/commons/1/1a/",
+                                   "ANI-wordcloud-3-17-2015.png"),
+                        height = 320, width = 450
+                    ),
+                    tags$small(
+                      "Source: Word cloud generated from current revision of WP:AN/I plus past 3 or 4 archives. Generated using R and wordcloud package. by MastCell (Own work) [CC BY-SA 4.0",
+                      a(href="https://commons.wikimedia.org/w/index.php?title=User:MastCell&action=edit&redlink=1", "MastCell"), 
+                      "or",
+                      a(href="http://creativecommons.org/licenses/by-sa/4.0", "via Wikimedia Commons"),
+                      "]"
+                      
+                    )
              )
-             
-           ),
-           mainPanel(
-             helpText("This is a teaching tool for Introductory Statistics. It displays a t-Distribtuion and a normal curve with user defined degrees of freedom and numbr of observations.
-                      The purpose is to help visualize difference between the two distributions. 
-                      See the instructions on the side panel."),
-             plotOutput('chart', 
-                        width = "800px", height = "600px")
            )
-  ),
-  navbarMenu("About",
-             tabPanel("More1"),
-             tabPanel("More2")
-  ),
-  tabPanel("Menu 4")
+  ) # tabPanel 'About'
   
 ))

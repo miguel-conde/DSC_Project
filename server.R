@@ -103,26 +103,13 @@ shinyServer(function(input, output, session) {
       pred
   })
   
-#  output$hidden <- renderPrint({
-    
-#    if (oldSelWord != input$selWord) {
-#      res <- paste(input$userText, input$selWord)
-#      oldSelWord <<- input$selWord
-#      updateTextInput(session, 'userText', value = res)
-#      res
-#    }
-    
-#  })
-  
-  
   observe({
     x <- input$selWord
-    if (oldSelWord != input$selWord) {
-      res <- paste(input$userText, input$selWord)
+    if (oldSelWord != input$selWord & x != '') {
+      res <- paste0(input$userText, " ", input$selWord)
       oldSelWord <<- input$selWord
       updateTextInput(session, 'userText', value = res)
     }
-    
   })
   
 })

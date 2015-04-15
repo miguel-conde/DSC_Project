@@ -23,6 +23,12 @@ library(data.table)
 
 oldSelModel <<- ""
 
+hlp_txt_1 <<- "You can type or paste your text in the text box below. The main 
+candidate word will be predicted under the text box, but other possible words 
+will be shown in the drop down list. You can select from this list the next 
+word that will be added to your text.\nPrediction settings can be accessed and
+changed in the left sidebar."
+
 l_Blogs   <<- c(0.01561975, 0.03848051, 0.04571407, 0.90018566)
 l_News    <<- c(0.02095653, 0.05361416, 0.06220533, 0.86322398)
 l_Twitter <<- c(0.05549261, 0.10944140, 0.15447238, 0.68059362)
