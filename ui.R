@@ -6,14 +6,20 @@
 #
 
 library(shiny)
+require(markdown)
 source("Global.R")
 
 shinyUI(navbarPage(
   
-  #      tags$head(
-  #        tags$link(rel = 'stylesheet', 
-  #                  type = 'text/css', href = 'styles.css')
-  #        ),
+        #tagList(
+        #  tags$head(
+        #    tags$link(rel  = 'stylesheet',
+        #              type = 'text/css', href = 'styles.css')
+        #    )
+        #  ),
+  #tags$style(type="text/css", 
+  #           '#shiny-progress { top: 50% !important;left: 50% !important;margin-top: -100px !important;margin-left: -250px !important;}'),
+  
   
   # Application title
   titlePanel(h2("Predicting Words", style = "font-family: 'Lobster', cursive;
@@ -28,6 +34,8 @@ shinyUI(navbarPage(
   #  title = 'Ya veremos' 
   
   tabPanel("Predicting",
+           tags$link(rel  = 'stylesheet', type = 'text/css', href = 'styles.css'),
+           includeCSS(file.path(".","www",'styles.css')),
            sidebarLayout(
              wellPanel(
                tags$style(type="text/css", 
@@ -64,14 +72,16 @@ shinyUI(navbarPage(
                  #tags$style(type='text/css', "#userText {  resize:vertical; max-height:300px; min-height:200px; }")
                ),
                hr(),
-               fluidRow(
-                 column(5, align = "top",
-                        h4('Main Prediction:')
-                 ),
-                 column(8, align = "bottom",
-                        verbatimTextOutput('wordPredicted')
-                 )
-               ),
+#               fluidRow(
+#                 column(5, align = "top",
+#                        h4('Main Prediction:')
+#                 ),
+#                 column(8, align = "bottom",
+#                        verbatimTextOutput('wordPredicted')
+#                 )
+#               ),
+               h4('Main Prediction:'),
+               verbatimTextOutput('wordPredicted'),
                hr(),
                selectInput('selWord', 'Select next word', "", 
                            multiple=FALSE, selectize=FALSE),

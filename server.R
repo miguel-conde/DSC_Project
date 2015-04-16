@@ -38,7 +38,11 @@ shinyServer(function(input, output, session) {
                          model <<- loadModelTotal()
                          l <<- l_Total
                        }
+                     
+                     setProgress(1)
+                     
                    })
+
       
       oldSelModel <<- sel
     }
@@ -46,15 +50,19 @@ shinyServer(function(input, output, session) {
   
   predict <- reactive({
     
+    # If necessary, change model
     changeModel()
     
+    # Prepare text input for processing
     tokens = splitIntoTokens(model, input$userText)
     
+    # Check if MaxNumPredicts is ok
     validate(
       need(input$numPred > 0 & input$numPred <= 100, 
            "Please, 'Max. Predictions' must be a number between 1 and 100")
     )
     
+    # Predict
     withProgress(message = sprintf("Predicting"),
                  detail = "Wait...", {
                    res <- predictNG_v2(model, tokens, 
@@ -62,21 +70,37 @@ shinyServer(function(input, output, session) {
                                        fullRes = TRUE, 
                                        NPredictions = input$numPred,
                                        interpol = input$interpolation)
+                   
+                   setProgress(1)
                  })
     
-    #    if(!input$fullResults)
-    #      Best <- as.list(c(Choose = '',res[[2]]))
-    #    else {
+    # Update list of possible next words
     choiceList <- arrangeSelList(res)
-    if(length(choiceList$Max.Prob) == 1)
-      Best <- list(Choose = '', 
-                   choiceList$Max.Prob, 
-                   Other.Possibilities = choiceList$Others )
-    else
-      Best <- list(Choose = '', 
-                   Max.Prob = choiceList$Max.Prob, 
-                   Other.Possibilities = choiceList$Others )
-    #    }
+    if(length(choiceList$Max.Prob) == 1) {
+      if(length(choiceList$Others) == 1) {
+        Best <- list(Choose = '', 
+                     choiceList$Max.Prob, 
+                     choiceList$Others)
+      }
+      else {
+        Best <- list(Choose = '', 
+                     choiceList$Max.Prob, 
+                     Other.Possibilities = choiceList$Others )
+      }
+    }
+    else {
+      if(length(choiceList$Others) == 1) {
+        Best <- list(Choose = '', 
+                     Max.Prob = choiceList$Max.Prob, 
+                     choiceList$Others )
+      }
+      else {
+        Best <- list(Choose = '', 
+                     Max.Prob = choiceList$Max.Prob, 
+                     Other.Possibilities = choiceList$Others )
+      }
+    }
+
     updateSelectInput(session, 'selWord',  
                       choices = Best,
                       selected = NULL)
@@ -86,9 +110,10 @@ shinyServer(function(input, output, session) {
   output$otherPredictions <- renderPrint({
     pred <- predict()[[2]]
     if(!input$fullResults)
-      writeLines(arrangePred(pred))
+      #writeLines(arrangePred(pred))
+      writeLines("")
     else
-      predict()[[2]]
+      pred
   })
   
   output$wordPredicted <- renderPrint({

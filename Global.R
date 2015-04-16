@@ -26,7 +26,7 @@ oldSelModel <<- ""
 hlp_txt_1 <<- "You can type or paste your text in the text box below. The main 
 candidate word will be predicted under the text box, but other possible words 
 will be shown in the drop down list. You can select from this list the next 
-word that will be added to your text.\nPrediction settings can be accessed and
+word to be added to your text.\nPrediction settings can be accessed and
 changed in the left sidebar."
 
 l_Blogs   <<- c(0.01561975, 0.03848051, 0.04571407, 0.90018566)

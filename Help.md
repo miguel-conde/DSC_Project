@@ -1,11 +1,3 @@
----
-title: "Help"
-output: 
-  html_document:
-    mathjax: default
-    self_contained: false
-runtime: shiny
----
 
 ## Quick Start
 

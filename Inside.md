@@ -59,7 +59,7 @@ To do that, we have optimized them in order to minimize perplexity in an statist
 
 In order to test the accuracy of our different models, we have generated a 4-gram Table Frequency List from samples of our *testing* files. We used the first three tokens of each 4-gram in the testing TFL as input to our models, get a prediction and check if it's the same as the fourth token in the testing TFL.
 
-These are the accuracy results for Back Off without interpolation:
+These are the accuracy results for Back Off without interpolation (95% confidence interval):
 
 ```
     Model Final.Sample Inf.Conf.Int      Mean Sup.Conf.Int
@@ -69,7 +69,7 @@ These are the accuracy results for Back Off without interpolation:
 4   Total        FALSE   0.18014464 0.1935198    0.2068949
 ```
 
-And these are the results for Back Off with interpolation:
+And these are the results for Back Off with interpolation (95% confidence interval):
 
 ```
     Model Final.Sample Inf.Conf.Int      Mean Sup.Conf.Int
